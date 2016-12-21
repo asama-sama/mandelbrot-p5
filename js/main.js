@@ -17,13 +17,13 @@ window.setup = function() {
   pixelDensity(1);
   colorMode(HSB, 1);
 
-  calcMandelbrot();
+  calcMandelbrot(maxWidth, minWidth, maxHeight, minHeight);
 }
 
 // must be on window for p5
 window.draw = function() {
   drawMandelbrot();
-  if(checkMouse()) {
+  if(updateZoom()) {
     // calcMandelbrot();
   }
 }
@@ -53,13 +53,13 @@ const drawMandelbrot = function() {
   console.log('draw');
 }
 
-const calcMandelbrot = function() {
+const calcMandelbrot = function(maxW, minW, maxH, minH) {
   var calculations = 0;
   data = [];
   for (var y=0; y<height; y++) {
     for (var x=0; x<width; x++) {
-      var real = map(x, 0, width, minWidth, maxWidth);
-      var im = map(y, 0, height, minHeight, maxHeight);
+      var real = map(x, 0, width, minW, maxW);
+      var im = map(y, 0, height, minH, maxH);
 
       var real_base = real;
       var im_base = im;
@@ -87,7 +87,7 @@ const calcMandelbrot = function() {
   console.log('calculations', calculations, 'd', data.length);
 }
 
-const checkMouse = function() {
+const updateZoom = function() {
   if(mouseIsPressed) {
     if(mouseButton === LEFT) {
       zoomIn();
