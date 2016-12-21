@@ -17,6 +17,10 @@ gulp.task('clean', function() {
 gulp.task('build', function() {
   return gulp.src('')
   .pipe(webpackstr(require('./webpack.config.js')))
+  .on('error', function(e){
+    console.error(e.toString());
+    this.emit('end');
+  })
   .pipe(gulp.dest('build/'));
 });
 
