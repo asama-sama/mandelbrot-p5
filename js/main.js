@@ -2,6 +2,8 @@ var p5 = require('p5');
 var _ = require('lodash');
 
 const MAX_ITERATIONS = 100;
+const SCALE_IN = 1.2;
+const SCALE_OUT = 1.2;
 var data = [];
 
 var minSlider; 
@@ -18,13 +20,14 @@ window.setup = function() {
   colorMode(HSB, 1);
 
   calcMandelbrot(maxWidth, minWidth, maxHeight, minHeight);
+  drawMandelbrot();
 }
 
 // must be on window for p5
 window.draw = function() {
   drawMandelbrot();
   if(updateZoom()) {
-    // calcMandelbrot();
+    calcMandelbrot(maxWidth, minWidth, maxHeight, minHeight);
   }
 }
 
@@ -50,7 +53,6 @@ const drawMandelbrot = function() {
     index++;
   }
   updatePixels();
-  console.log('draw');
 }
 
 const calcMandelbrot = function(maxW, minW, maxH, minH) {
@@ -88,11 +90,11 @@ const calcMandelbrot = function(maxW, minW, maxH, minH) {
 }
 
 const updateZoom = function() {
-  if(mouseIsPressed) {
-    if(mouseButton === LEFT) {
+  if(keyIsPressed) {
+    if(keyCode === UP_ARROW) {
       zoomIn();
       return true;
-    } else if (mouseButton === RIGHT) {
+    } else if (keyCode === DOWN_ARROW) {
       zoomOut();
       return true;
     }
@@ -100,20 +102,39 @@ const updateZoom = function() {
 }
 
 const zoomIn = function() {
-  console.log(mouseX, mouseY)
-  const xScale = (maxWidth - minWidth)/3;
-  const yScale = (maxHeight - minHeight)/3;
-  
-  console.log(maxWidth, minWidth, maxHeight, minHeight);
+  const relativeW = mouseX/width;
+  const relativeH = mouseY/height;
+
   var x = map(mouseX, 0, width, minWidth, maxWidth);
   var y = map(mouseY, 0, height, minHeight, maxHeight);
-  maxWidth = x + xScale;
-  minWidth = x - xScale;
-  maxHeight = y + yScale;
-  minHeight = y - yScale;
-  console.log(maxWidth, minWidth, maxHeight, minHeight);
+
+  const currWidth = maxWidth - minWidth;
+  const currHeight = maxHeight - minHeight;
+
+  const newWidth = currWidth/SCALE_IN;
+  const newHeight = currHeight/SCALE_IN;
+
+  maxWidth = x + (1 - relativeW) * newWidth;
+  minWidth = x - relativeW * newWidth;
+  maxHeight = y + (1 - relativeH) * newHeight;
+  minHeight = y - relativeH * newHeight;
 }
 
 const zoomOut = function() {
+  const relativeW = mouseX/width;
+  const relativeH = mouseY/height;
 
+  var x = map(mouseX, 0, width, minWidth, maxWidth);
+  var y = map(mouseY, 0, height, minHeight, maxHeight);
+
+  const currWidth = maxWidth - minWidth;
+  const currHeight = maxHeight - minHeight;
+
+  const newWidth = currWidth*SCALE_OUT;
+  const newHeight = currHeight*SCALE_OUT;
+
+  maxWidth = x + (1 - relativeW) * newWidth;
+  minWidth = x - relativeW * newWidth;
+  maxHeight = y + (1 - relativeH) * newHeight;
+  minHeight = y - relativeH * newHeight;
 }
